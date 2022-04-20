@@ -1,0 +1,27 @@
+delivery challan
+recipe
+image integ
+complaint
+invoice
+
+
+            $prod_unit = Product::pluck('unit','id');
+            if (strtolower($request->invoice_type) == "sale") {
+                Sales::where('invoice_id', $invoice->id)->delete();                
+                foreach ($request->products as $key => $value) {
+                    # code...
+                    $sl = new Sales;
+                    $sl->product_id     =   intval($value);
+                    $sl->sale_price     =   floatval($request->price[$key]);
+                    $sl->warehouse_id   =   intval($request->warehousekiid[$key]);
+                    $sl->quantity       =   floatval($request->quantity[$key]);
+                    $sl->total          =   floatval($request->total[$key]);
+                    $sl->invoice_id     =   $invoice->id;
+                    // $sl->scheme         =   $request->scheme[$key];
+                    // $sl->com1           =   $request->com1[$key];
+                    // $sl->com2           =   $request->com2[$key];
+                    // $sl->com3           =   $request->com3[$key];
+                    $sl->freight        =    $request->freight_item ? $request->freight_item[$key] : 0;
+                    $sl->unit           =   $request->unit ? $request->unit[$key] : $prod_unit[$value];
+                    $sl->unit_conversion =   $request->unit_conversion ? $request->unit_conversion[$key] 
+                    : UnitManagement::where('name',$sl->unit )->orWhere('product_id',$value)->pluck('conversion')->first();

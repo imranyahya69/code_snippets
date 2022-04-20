@@ -1,0 +1,27 @@
+SELECT	DISTINCT(`o`.`id`) AS `order_id`,`o`.`invoice_id` AS `invoice_id`,`i`.`type` AS `invoice_type`,`i`.`customer_id`,`i`.description AS `invoice_description`,
+`o`.`product_id` AS `product_id`,`p`.`category_id` AS  `product_category_id`,`p`.`name` AS `product_name`,`p`.`brand` AS `brand`,
+`p`.`description` AS `product_description`,`p`.`itemcode` AS `product_itemcode`,`p`.`barcode` AS `product_barcode`,`p`.`size` AS `product_size`,
+`p`.`type` AS `product_type`,`p`.`notify` AS `product_notify`,`p`.`printPrice` AS `product_print_price`,`p`.`min_sale_price` AS `product_min_price`,
+`p`.`salePrice` AS `product_sale_price`,`i`.`date` AS `invoice_date`,
+            -- `sp`.`price` AS purchase_price,
+            -- IFNULL(`o`.`purchasePrice`, `o`.`salePrice`)  AS `purchase_price`,
+`o`.`salePrice` AS `sale_price`,`o`.`quantity`,`p`.`unit_id` AS `product_unit`,`i`.`total` AS `invoice_total`,
+`i`.`shipping` AS `invoice_shipping`,`i`.`tax` AS `invoice_tax`,`i`.`discount` AS `invoice_discount`,`o`.`note`,				
+`p`.`added_by` AS `product_added_by`,`p`.`edited_by` AS `product_edited_by`,`i`.`added_by` AS `invoice_added_by`,
+`i`.`edited_by` AS `invoice_edited_by`,`o`.`created_at` AS `order_created_at`,`o`.`updated_at` AS `order_updated_at`,
+`o`.`deleted_at` as`order_deleted_at`,`p`.`created_at` AS `product_created_at`,`p`.`updated_at` AS `product_updated_at`,
+`p`.`deleted_at` AS`product_deleted_at`,`i`.`created_at` AS `invoice_created_at`,`i`.`updated_at` AS `invoice_updated_at`,
+`i`.`deleted_at` AS`invoice_deleted_at`,`so`.`created_at` AS `sale_order_created_at`,`so`.`updated_at` AS `sale_order_updated_at`,
+`so`.`deleted_at` AS`sale_order_deleted_at`,`so`.`date` AS `sale_order_date`,`so`.`delivery_date` AS `sale_order_delivery_date`,
+`i`.`is_manual`,`i`.`is_tax`,`i`.`tax_percentage`,`i`.`sales_person`,`i`.`bill_number`,`i`.`supplier_id`,`i`.`related_to`,`so`.source,
+`p`.`status` AS `product_status`,`so`.`status` AS `sale_order_status`,`so`.`posted` AS `sale_order_posted`,`o`.`delivery_status` AS  `order_status`
+        FROM `order` AS `o`
+        JOIN `products` AS `p` ON `p`.`id` = `o`.`product_id`
+        JOIN `invoice` AS `i` ON `i`.`id` = `o`.`invoice_id`
+       	LEFT JOIN `supplier_price_records` AS `sp` ON `sp`.`product_id` = `o`.`product_id` AND `sp`.`date` =  (
+        SELECT  MAX(`date`) FROM supplier_price_records 
+        WHERE `product_id` =`o`.`product_id` AND `supplier_id` = `sp`.`supplier_id` AND `date` <=`i`.`date`)
+
+        LEFT JOIN `sale_orders` AS `so` ON `so`.`invoice_id` = `i`.`id` AND (`so`.`posted` = 1 AND `so`.`posted` IS NOT NULL)
+        where (`i`.`type` = 'sale' or (`i`.`type` = 'sale_order'  AND `so`.`posted` IS NOT NULL  AND `so`.`posted` = 1)) AND
+        `i`.`deleted_at` IS NULL AND `o`.`deleted_at` IS NULL;

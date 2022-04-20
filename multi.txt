@@ -1,0 +1,27 @@
+function print_invoice(type = 'printorder')
+{
+    var id = '{{$invoice->id}}';
+    var url = '{{ url('invoice') }}';        
+        myWindow = window.open(url+'/'+type+'/'+id+'/','','width=1100,height=900');
+        myWindow.focus();
+        myWindow.print();
+
+        return false;
+}
+
+     function print_envelop()
+     {
+        myWindow = window.open('{{url('invoice/envelop')}}/{{$invoice->id}}','','width=1100,height=900');
+        myWindow.focus();
+        myWindow.print();
+
+        return false;
+     }
+
+
+
+                                            <a href="{{url('#')}}">
+                                                <button class="btn btn-primary m-btn m-btn--custom m-btn--icon m-btn--air m-btn--pill" onclick="print_invoice('printordermultiplecopy')">             
+                                                          Print Multiple Order Sheet 
+                                                </button>
+                                            </a>

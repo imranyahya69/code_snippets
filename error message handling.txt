@@ -1,0 +1,7 @@
+$('.alert').delay('2000').fadeOut();
+
+    @if (session('message_error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong> {{ session('message_error') }} </strong>    
+        </div>
+    @endif

@@ -1,0 +1,33 @@
+        <tr>
+            <td width="18%"><strong>phone: </strong>{{ $invoice->person->phone }}</td>
+        </tr>
+        <tr class="header-height">
+            <td colspan="3" rowspan="2"><u>{{ $invoice->person->address }}</u></td>
+            <td>Issue Date:</td>
+            <td><u>{{ date('d M Y', strtotime($invoice->invoice_date)) }}</u></td>
+        </tr>
+        <tr class="header-height">
+            <td></td>
+            @if ($invoice->due_date)
+                <td>Due Date:</td>
+                <td><u>{{ date('d M Y', strtotime($invoice->due_date)) }}</u></td>
+            @endif
+        </tr>
+        <tr>
+            <td width="14%">Comment:</td>
+            <td width="25%"><u>{{ $invoice->comment }}</u></td>
+            @if ($invoice->person->ntn)
+                <td width="10%">NTN:</td>
+                <td width="18%"><u>{{ str_replace(' ', '', $invoice->person->ntn) }}</u></td>
+            @endif
+            <td width="17%">Sales Person:</td>
+            <td width="13%"><u>{{ $invoice->sales_person }}</u></td>
+        </tr>
+        @if ($invoice->person->strn)
+            <tr>
+                <td><strong>STRN: {{ str_replace(' ', '', $invoice->person->strn) }}</strong>
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
+        @endif

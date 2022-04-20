@@ -1,0 +1,46 @@
+html show pic
+
+<div class="m-card-profile__pic">
+<div class="m-card-profile__pic-wrapper">
+<img id="blah" src="{{profilepic($employee->picture)}}" style="width: 130px;height: 130px;" alt=""/>
+</div>
+</div>
+
+html input pic
+
+<div class="form-group m-form__group row">
+	<label for="example-text-input" class="col-2 col-form-label">Profile Pic</label>
+	<div class="col-7">
+		<input type="file" name="profile_pic" id="imgInp" class="form-control m-input" placeholder="" value="{{$employee->picture}}" accept="image/*">
+	</div>
+</div>
+
+
+
+java script part
+function readURL(input) {
+
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+
+    reader.onload = function(e) {
+      $('#blah').attr('src', e.target.result);
+    }
+
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+$("#imgInp").change(function() {
+  readURL(this);
+});
+
+
+
+
+controller part
+
+                if ($request->file('profile_pic')) {
+                    $picture = "storage/".str_replace('public/', "", $request->file('profile_pic')->store('public/profile'));
+                    $employee->picture  = $picture;
+                }

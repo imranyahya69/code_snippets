@@ -1,0 +1,11 @@
+SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE product_categories;
+TRUNCATE products;
+
+TRUNCATE supplier_price_records;
+TRUNCATE stocklog;
+TRUNCATE `order`;
+TRUNCATE invoice;
+TRUNCATE customer;
+
+SET FOREIGN_KEY_CHECKS = 1;

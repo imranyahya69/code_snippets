@@ -1,0 +1,68 @@
+        $(document).on("submit", "form", function(e) {
+            form = $(this);
+            if ($(form).hasClass('no-ajax')) {
+                return;
+            }
+            //disable submit button
+            $("#submit_btn").addClass('disabled');
+
+            e.preventDefault();
+            // load_start();
+            try {
+
+                old_request.abort();
+
+            } catch (e) {
+                console.log(e);
+                //nothing to do
+            }
+            old_request = $.ajax({
+                url: $(this).attr('action'),
+                data: $(this).serialize(),
+                method: "POST",
+                dataType: "json"
+            }).done(function(e) {
+                console.log(e.do);
+                // load_end();
+                $("#log").removeClass();
+                $("#submit_btn").removeClass('disabled');
+                $("#log").addClass("alert alert-success");
+                $("#log").html(e.message);
+                if (e.action) {
+                    var page = e.do;
+                    var myWindow = window.open(page, "_blank","scrollbars=yes,width=1000,height=800,top=300");
+                }
+            }).error(function(e) {
+                // load_end();
+                $("#log").removeClass();
+                $("#submit_btn").removeClass('disabled');
+                $("#log").addClass("alert alert-danger");
+                IS_JSON = false;
+                var obj = "";
+                try {
+                    var obj = $.parseJSON(e.responseText);
+                    IS_JSON = true;
+                } catch (err) {
+                    IS_JSON = false;
+                }
+
+                if (IS_JSON) {
+                    var errhtml = "";
+                    // var obj = jQuery.parseJSON(e.responseText);
+                    $.each(obj, function(key, value) {
+                        // alert(value.com);
+                        errhtml = errhtml + value + "<br>";
+                    });
+                    $("#log").html(errhtml);
+                } else
+                    try {
+                        if (e.responseJSON.message) {
+                            $("#log").html(e.responseJSON.message);
+                        } else {
+                            $("#log").html("Some Error Occured, Try Again");
+                        }
+                    } catch (err) {
+                        $("#log").html("Some Error Occured, Try Again or Call our helpline");
+                    }
+            });
+        });

@@ -1,0 +1,122 @@
+------------------------------------------HMTL part
+
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <label class="col-form-label" for="unit">Division:</label>
+                                <select class="form-control" type="text" name="division">
+                                    @foreach ($divisions as $division)
+                                        <option value="{{ $division->id }}">{{ $division->name }}</option>
+                                    @endforeach
+                                </select>
+                                <span class="m-form__help"></span>
+                            </div>
+                            <div class="col-lg-6">
+                                <label class="col-form-label" for="unit">Department:</label>
+                                <select class="form-control" type="text" name="department">
+
+                                </select>
+                                <span class="m-form__help"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <label class="col-form-label">Sub Department:</label>
+                                <select class="form-control" type="text" name="sub_department">
+
+                                </select>
+                            </div>
+                            <div class="col-lg-6">
+                                <label class="col-form-label">Designation</label>
+                                <input type="text" value="" name="designation" class="form-control m-input"
+                                    placeholder="Enter Employee Designation">
+                            </div>
+                        </div>
+
+------------------------------------------JAVASCRIPT part
+
+            $('select[name="department"]').html('');
+            $('select[name="sub_department"]').html('');
+            var division = $('select[name="division"]').val();
+            var department = $('select[name="department"]').val();
+            if (division != '' || department != '') {
+                ajax_data(division, department);
+            }
+            $(document).on('change', 'select[name="division"]', function() {
+                $('select[name="department"]').html('');
+                $('select[name="sub_department"]').html('');
+                var division = $(this).val();
+                if (division != '') {
+                    ajax_data(division, null);
+                }
+            });
+            $(document).on('change', 'select[name="department"]', function() {
+                $('select[name="sub_department"]').html('');
+                var department = $(this).val();
+                if (department != '') {
+                    ajax_data(null, department);
+                }
+            });
+
+
+
+------------------------------------------AJAX DATA part
+
+        function ajax_data(division = null, department = null) {
+            $.ajax({
+                type: 'POST',
+                url: '{{ url('hr/ajax_data') }}',
+                data: {
+                    division: division,
+                    department: department
+                },
+                dataType: "json",
+                success: function(resultData) {
+                    var departmentData = resultData.departments;
+                    var sub_departmentData = resultData.sub_departments;
+
+                    if (departmentData.length > 0) {
+                        department_options = '';
+
+                        $.each(departmentData, function(key, value) {
+                            department_options += '<option value="' + value.id + '">' + value.name +
+                                '</option>';
+                        });
+
+                        $('select[name="department"]').append(department_options);
+                    }
+
+                    if (sub_departmentData.length > 0) {
+                        sub_department_options = '';
+
+                        $.each(sub_departmentData, function(key, value) {
+                            sub_department_options += '<option value="' + value.id + '">' + value.name +
+                                '</option>';
+                        });
+
+                        $('select[name="sub_department"]').append(sub_department_options);
+                    }
+                },
+            });
+        }
+
+
+------------------------------------------AJAX DATA CONTROLLER part
+
+    public function ajax_data(Request $request)
+    {
+        $departments = '';
+        $sub_departments = '';
+        if($request->division != '')
+        {
+            $departments = EmployeeDepartment::where('division_id',$request->division)->get();
+            $sub_departments = EmployeeSubDepartment::where('department_id',$departments[0]->id)->get();
+        }
+        if($request->department != '')
+        {
+            $sub_departments = EmployeeSubDepartment::where('department_id',$request->department)->get();
+        }
+
+        return response(['departments' => $departments ?? '', 'sub_departments' => $sub_departments ?? '']);
+    }
+

@@ -1,0 +1,12 @@
+        function addWHT(e) {
+            if ($(e).val() == 'Supplier') {
+                var addWHT = '<div class="form-group">' +
+                    '<label class="control-label" for="with holding tax">With Holding Tax(%):</label>' +
+                    '<input type="number" name="wht" class="form-control" />' +
+                    '</div>';
+                $(addWHT).insertAfter($(e).parent());
+            }else{
+                // $(e).parent().parent().find('input[name="wht"]').parent().remove();
+                $('input[name="wht"]').parent().remove();
+            }
+        }

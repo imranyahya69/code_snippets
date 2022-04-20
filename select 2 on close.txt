@@ -1,0 +1,4 @@
+        $('.product_select2').on('select2:close', function (e)
+        {
+            $('#color').focus();
+        });

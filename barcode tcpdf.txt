@@ -1,0 +1,42 @@
+ $invoice = Invoice::where('id', $id)->first();
+        if (!$invoice) {
+            return redirect()->back()->with('message_error', 'No Record Found');
+        } elseif (!$invoice->barcode) {
+            return redirect()->back()->with('message_error', 'No Barcode found for this Invoice # : \''.$id.'\'');
+        } else {
+            $style = array(
+                'position' => '',
+                'align' => 'C',
+                'stretch' => false,
+                'fitwidth' => true,
+                'cellfitalign' => '',
+                'border' => true,
+                'hpadding' => 'auto',
+                'vpadding' => 'auto',
+                'fgcolor' => array(0,0,0),
+                'bgcolor' => false, //array(255,255,255),
+                'text' => true,
+                'font' => 'helvetica',
+                'fontsize' => 8,
+                'stretchtext' => 4
+            );
+            @\PDF::SetHeaderData('',0,'','',array(0,0,0), array(255,255,255) );
+            @\PDF::SetMargins(4, 4, PDF_MARGIN_RIGHT);
+            @\PDF::SetHeaderMargin(0);
+            @\PDF::AddPage();
+            if($type == 2){
+                $second_column_height = 4.0;
+                foreach (range(0, 6) as $number) {
+                    @\PDF::write1DBarcode($invoice->barcode, 'C39', '', '', '', 18, 0.5, $style, 'N');
+                    @\PDF::write1DBarcode($invoice->barcode, 'C39', 80, $second_column_height, '', 18, 0.5, $style, 'N');
+                    @\PDF::Ln();
+                    $second_column_height += 21.5;
+                }
+            }
+            else{
+                foreach (range(0, 6) as $number) {
+                    @\PDF::write1DBarcode($invoice->barcode, 'C39', '', '', '', 18, 0.5, $style, 'N');
+                    @\PDF::Ln();
+                }
+            }
+            return response(PDF::output('barcode.pdf', 'S'))->header('Content-Type', 'application/pdf');

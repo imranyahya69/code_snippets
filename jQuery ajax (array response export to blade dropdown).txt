@@ -1,0 +1,17 @@
+            var selectedDate = $(e).val();
+            $('#gate_pass_out_details').find('option').not(':first').remove();
+            $.ajax({
+                type: "GET",
+                data: {
+                    date: selectedDate
+                },
+                dataType: 'json',
+                url: "{{ url('gate-pass/getGatePasses') }}",
+                success: function(result) {
+                    $.each(result, function(key, value) {
+                        $('#gate_pass_out_details').append(
+                            '<option value="' + value + '">' + value + '</option>'
+                        );
+                    });
+                }
+            });
