@@ -1,0 +1,350 @@
+@extends('layouts.master')
+
+
+
+@section('content')
+
+   <!-- BEGIN: Subheader -->
+                    <div class="m-subheader ">
+                        <div class="d-flex align-items-center">
+                            <div class="mr-auto">
+                                <h3 class="m-subheader__title m-subheader__title--separator">
+                                    Products Category
+                                </h3>
+                                <ul class="m-subheader__breadcrumbs m-nav m-nav--inline">
+                                    <li class="m-nav__item m-nav__item--home">
+                                        <a href="#" class="m-nav__link m-nav__link--icon">
+                                            <i class="m-nav__link-icon la la-home"></i>
+                                        </a>
+                                    </li>
+                                    <li class="m-nav__separator">
+                                        -
+                                    </li>
+                                    <li class="m-nav__item">
+                                        <a href="{{ url('home') }}" class="m-nav__link">
+                                            <span class="m-nav__link-text">
+                                                Dashboard
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li class="m-nav__separator">
+                                        -
+                                    </li>
+                                    <li class="m-nav__item">
+                                        <a href="" class="m-nav__link">
+                                            <span class="m-nav__link-text">
+                                                Products Category
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END: Subheader -->
+                    <div class="m-content">
+                        <div class="m-portlet m-portlet--mobile">
+                            
+                            <div class="m-portlet__body">
+                                <!--begin: Search Form -->
+                                <div class="m-form m-form--label-align-right m--margin-top-20 m--margin-bottom-30">
+                                    <div class="row align-items-center">
+                                        <div class="col-xl-8 order-2 order-xl-1">
+                                            <div class="form-group m-form__group row align-items-center">
+                                                <div class="col-md-6">
+                                                    <div class="d-md-none m--margin-bottom-10"></div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="m-input-icon m-input-icon--left">
+                                                        <input type="text" class="form-control m-input" placeholder="Search..." id="m_form_search">
+                                                        <span class="m-input-icon__icon m-input-icon__icon--left">
+                                                            <span>
+                                                                <i class="la la-search"></i>
+                                                            </span>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xl-4 order-1 order-xl-2 m--align-right">
+                                            <button class="btn btn-primary m-btn m-btn--custom m-btn--icon m-btn--air m-btn--pill" data-toggle="modal" data-target="#create-item">
+                                                <span>
+                                                      Add New 
+                                                </span>
+                                            </a>
+                                            <div class="m-separator m-separator--dashed d-xl-none"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--end: Search Form -->
+                                <!--begin: Datatable -->
+                                <div class="panel-body">
+                    <table  class="m-datatable__table datatable" style="width:100%">
+                        <thead>
+                            <tr>
+                            <th><span>ID</span></th>
+                            <th><span>Name</span></th>
+                            <th><span>Description</span></th>
+                            <th><span>Action</span></th>
+
+                            </tr>
+                        </thead>
+                        <tbody >
+                           
+                        </tbody>
+                    </table>
+                </div>
+
+        @if (is_allowed('add-supplier'))
+ <!-- Create Category Modal -->
+        <div class="modal fade" id="create-item" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Add New Category</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+              </div>
+              <div class="modal-body">
+                 <form data-toggle="validator" action="{{url('product')}}/category" method="POST" id="createCategory">
+                        
+                        <div class="form-group">
+                            <label class="control-label" for="name">Name:</label>
+                            <input type="text" name="name" maxlength="100" class="form-control" data-error="Please enter Name." required />
+                            <div class="help-block with-errors"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" for="name">Description:</label>
+                            <input type="text" name="description" maxlength="100" class="form-control" data-error="Please enter Name." required />
+                            <div class="help-block with-errors"></div>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn add-submit btn-success">Submit</button>
+                        </div>
+                    </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        @endif
+
+        <!-- Edit Category Modal -->
+        <div class="modal fade" id="edit-item" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Edit</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+              </div>
+              <div class="modal-body">
+
+                    <form data-toggle="validator" action="{{url('product')}}/update" method="PUT" id="updateCategory">
+
+                        <div class="form-group">
+                            <label class="control-label" for="name">Name:</label>
+                            <input type="text" name="name" maxlength="100" class="form-control" data-error="Please enter Name." required />
+                            <div class="help-block with-errors"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" for="description">description:</label>
+                            <input type="text" name="description" class="form-control" required/>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn update btn-success">Update</button>
+                        </div>
+                    </form>
+              </div>
+            </div>
+          </div>
+        </div>
+   
+        <!-- Edit Category Modal -->
+
+
+            <!--end: Datatable -->
+        </div>
+    </div>
+    </div>
+
+@endsection
+
+
+
+@section('scripts')
+<script type="text/javascript">
+
+    var table = false;
+  var url = "{{url('product')}}";
+      
+    /* get data from database*/
+  $(document).ready(function() {
+    table =  $('.datatable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: '{{ url("product/category_datatable") }}',
+            columns: [
+
+                { data: 'id', name: 'id' },
+                {data:'name',name:'name', defaultContent:""},
+                {data:'description',name:'description', defaultContent:""},
+                {data: 'action', name: 'action'}
+                
+            ]
+
+        });
+    $('#DataTables_Table_0_filter').remove();
+    });
+
+
+
+  
+  /* Search Data from table*/  
+  $(document).ready(function() {
+     
+    // Event listener to the two range filtering inputs to redraw on input
+    $('#m_form_search').keyup( function() {
+        table.search($(this).val()).draw();
+    } );
+   });
+
+
+
+   /* Create new Item */
+    $("#createCategory").submit(function(e){
+        e.preventDefault();
+        var form_action = $(this).attr("action");
+        
+        $.ajax({
+            dataType: 'json',
+            type:'POST',
+            url: form_action,
+            data:$(this).serialize()
+        }).done(function(){
+            
+            $(".modal").modal('hide');
+            $('#createCategory')[0].reset();
+            toastr.success('Category Created Successfully.', 'Success Alert', {timeOut: 5000});
+             var table = $('.datatable').DataTable();
+            table.ajax.reload();
+        }).fail(function(request){
+
+            $.each(request.responseJSON, function(d,t){
+                toastr.error(t.join(""),'Category Not Created .', 'Failed Alert', {timeOut: 500});
+            });
+
+        });
+
+    });
+
+
+/* Edit Category */
+    $("body").on("click",".edit-item",function(){
+        // debugger;
+         var id = $(this).data('id');
+         
+         $("#edit-item").find("input[name='name']").val($(this).data('name'));
+         $("#edit-item").find("input[name='description']").val($(this).data('description'));
+         $("#edit-item").find("form").attr("action",url + '/category/' + id);
+         
+    });
+
+
+/* Updated person */
+    $("#updateCategory").submit(function(e){
+        e.preventDefault();
+        var form_action = $(this).attr("action");
+        $.ajax({
+            dataType: 'json',
+            type:'PUT',
+            url: form_action,
+            data:$(this).serialize()
+        }).done(function(){
+            
+            $(".modal").modal('hide');
+            $('#updateCategory')[0].reset();
+            toastr.success('Category Updated Successfully.', 'Success Alert', {timeOut: 5000});
+             var table = $('.datatable').DataTable();
+            table.ajax.reload();
+        }).fail(function(request){
+            $.each(request.responseJSON, function(d,t){
+                toastr.error(t.join(""),'Category Not Updated .', 'Failed Alert', {timeOut: 5000});
+            });
+            //debugger;
+            
+        });
+    });
+
+
+/* Remove person */
+    
+    $("body").on("click",".remove-item",function(){
+        
+        if (confirm("Are you sure you want to delete this!")) {
+
+           var id = $(this).data('id');
+        $.ajax({
+            dataType: 'json',
+            type:'DELETE',
+            url: url + '/category/' + id,
+        }).done(function(){
+            
+            toastr.success('Category Deleted Successfully.', 'Success Alert', {timeOut: 5000});
+             var table = $('.datatable').DataTable();
+            table.ajax.reload();
+        }).fail(function(request){
+                $.each(request.responseJSON, function(d,t){
+                toastr.error(t.join(""),'Category Not Deleted .', 'Failed Alert', {timeOut: 5000});
+            });
+
+        }); 
+        }
+
+        
+    });
+  
+
+
+     /* Get product Quantity against Person from inventory */
+      $("body").on("click",".view-stock", function(e)
+     {
+     e.preventDefault
+     var person_id = $(this).data('id');
+    
+           $.ajax({
+
+                  type: "POST",
+                  data: {person_id:person_id},
+                  dataType: 'json',
+                  url: url + '/person',
+                  success: function(result){
+                       if(result>0)
+                       {
+
+                      $('#personstock').html(result);
+                      
+                     
+                       }
+                       else
+                       {
+                        $('#personstock').html('N/A');
+                       
+                       }
+                  }
+
+                  
+               });
+     }); 
+
+/* Import To Excel */
+
+@if(Session::has('success'))
+        toastr.success("{{ Session::get('success') }}", 'Success Alert', {timeOut: 5000});
+  @endif
+
+@if(Session::has('error'))
+        toastr.error("{{ Session::get('error') }}", "Failed Alert", {timeOut: 5000});
+  @endif  
+
+</script>
+
+@endsection

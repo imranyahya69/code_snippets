@@ -1,0 +1,5 @@
+        validator($request->all(), [
+            'product_group_name' => 'required|string|max:30',
+            'products' => 'required|numeric',
+            'quantity' => 'required|numeric|min:1',
+        ])->validate();
