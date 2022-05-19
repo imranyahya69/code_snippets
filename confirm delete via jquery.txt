@@ -1,0 +1,27 @@
+        $("body").on("click", ".remove-item", function() {
+            if (confirm("Are you sure you want to delete this!")) {
+                var id = $(this).data('id');
+                var url = "{{ url('supplier_price_records') }}";
+                $.ajax({
+                    dataType: 'json',
+                    type: 'DELETE',
+                    url: url + '/delete/' + id,
+                }).done(function() {
+
+                    toastr.success('Person Deleted Successfully.', 'Success Alert', {
+                        timeOut: 5000
+                    });
+                    var table = $('.datatable').DataTable();
+                    if (typeof(instance) != "undefined" && instance != null) {
+                        instance.refresh();
+                    }
+                }).fail(function(request) {
+                    $.each(request.responseJSON, function(d, t) {
+                        toastr.error(t.join(""), 'Person Not Deleted .', 'Failed Alert', {
+                            timeOut: 5000
+                        });
+                    });
+
+                });
+            }
+        });

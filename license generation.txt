@@ -1,0 +1,10 @@
+		$key = str_replace("-", "", $data);
+		$license_data['package'] = substr($key, 0,2);
+		$license_data['expiry_date'] = date('m/d/y',(hexdec(substr($key, 2,8))));
+		$license_data['mobile_number'] = hexdec(substr($key, 10,8));
+		$license_data['validate'] = (substr($key, 18)== strtoupper(substr(dechex(hexdec($license_data['package'])+hexdec(substr($key, 2,8))+$license_data['mobile_number']),-5)))?true:false;
+		$license_data['today'] = date("m/d/y");
+		$license_data['days_left_in_expiry'] = (strtotime($license_data['expiry_date']) - strtotime($license_data['today']))/(60*60*24);
+		$license_data['expired'] = ($license_data['days_left_in_expiry'] < 0)?true:false;
+		$user_mobile = str_replace("-", "", User::first()->email);
+		Session::put('license_info',$license_data);

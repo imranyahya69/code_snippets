@@ -1,0 +1,3 @@
+                    ->when($color, function ($query) use ($color) {
+                        return ($color) ? $query->where('color', $color) : false;
+                    })
