@@ -1,0 +1,7 @@
+        $purchase_invoices = DB::table('invoice')
+            ->join('purchases', 'invoice.id', '=', 'purchases.invoice_id')
+            ->selectRaw("SUM(purchases.purchase_price * purchases.quantity) as amt, invoice.person_id, invoice.invoice_type as typo")
+            ->where('invoice_date', $startdate)
+            ->where('purchases.type','purchase')
+            ->groupBy("invoice.person_id")
+            ->get();

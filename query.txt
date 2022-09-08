@@ -1,0 +1,50 @@
+	$sale_orders = DB::table('order AS o')
+				->join('products AS p', function($q) {
+					$q->on('p.id', '=', 'o.product_id');
+					$q->whereNull('p.deleted_at');
+				})
+				->leftJoin('sale_orders AS so', function($q) {
+					$q->on('so.invoice_id','=', 'o.invoice_id');
+				})->leftJoin('invoice AS i', function ($q) {
+					$q->on('i.id', '=', 'o.invoice_id');
+					$q->where('i.type', 'LIKE', 'sale%');
+				})
+				
+				->leftJoin('transaction AS transIn', function($q) {
+					$q->on('transIn.invoice_id','=', 'i.id');
+					$q->whereIn('transIn.type',['in','purchase']);
+				})->leftJoin('transaction AS transOut', function($q) {
+					$q->on('transOut.invoice_id','=', 'i.id');
+					$q->whereIn('transOut.type',['out','sale']);
+				})
+				
+				->orderBy('o.id','asc')
+				->whereBetween('i.date', [$from, $to])
+				->select(
+					DB::raw('o.id AS orderID'),
+					'p.id AS product_id',DB::raw('CONCAT(p.name, " ",p.brand," ",p.description) AS pName'),
+					'o.salePrice AS s_price',
+
+					DB::raw('transOut.amount -transIn.amount AS balance'),
+
+					'i.id AS invoice_idd','i.type AS invoiceType','i.total AS invoiceTotal','i.date AS invoiceDate','i.sales_person AS invoiceSales_person','i.description AS notes','i.customer_id AS customer_id',
+					'so.posted',
+					'i.total',
+					'o.id AS order_id',
+					'so.source AS source',
+					'o.quantity AS quantity'
+				)->get();
+
+
+
+
+
+
+
+erp transaction_expense issue query
+
+
+        $query = Transaction::leftJoin('person','transaction.person_id',"=",'person.id')
+                ->leftJoin('accounts as expense', 'expense.id', '=', 'transaction.expense_id')
+                ->leftJoin('accounts as account', 'account.id', '=', 'transaction.account_id')
+                ->selectRaw("transaction.*, person.id as pid, person.customer_zone_id");

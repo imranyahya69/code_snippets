@@ -1,0 +1,103 @@
+				// password protected
+				// $validated = is_password_validated();
+				// if (!$validated) {
+				// 	  header('WWW-Authenticate: Basic realm="My Realm"');
+				// 	  header('HTTP/1.0 401 Unauthorized');
+				// 	  die ("Not authorized");
+				// }
+				// password protected
+
+		if (!$from) {
+			$from = date('Y-01-01');
+		}
+		if (!$to) {
+			$to = date('Y-m-d');
+		}
+		// $sales = SaleOrder::where('posted',1);
+		// $regular_sales = Invoice::where('type','sale');
+		// if ($request->sale_id) {
+		// 	$to = $from = false;
+		// 	$sales = SaleOrder::where('invoice_id', $request->sale_id);
+		// }
+		// if ($from) {
+		// 	$sales = $sales->where('date','>=',$from);
+		// 	$request->from = $from;
+		// 	$regular_sales = $regular_sales->where('date','>=',$from);
+		// }
+		// if ($to) {
+		// 	$sales = $sales->where('date','<=',$to);
+		// 	$request->to = $to;
+		// 	$regular_sales = $regular_sales->where('date','<=',$to);
+		// }
+		// $sales = $sales->get()->pluck('invoice_id')->toArray();
+		// $regular_sales = $regular_sales->pluck('id')->toArray();
+		// // dd($regular_sales);
+		// $sales = array_merge($sales, $regular_sales);
+		// $invoice = Order::with('invoice')->whereIn('invoice_id',$sales)->get();
+		$query = DB::table('order AS o')
+		->join('products AS p', function($q) {
+			$q->on('p.id', '=', 'o.product_id');
+			$q->whereNull('p.deleted_at');
+		})
+		->leftJoin('supplier_price_records AS sp', function ($q) use ($to) {
+			$q->on('sp.product_id', '=', 'p.id');
+			$q->where('sp.date', '<=', $to);
+		})->leftJoin('sale_orders AS so', function($q) {
+			$q->on('so.invoice_id','=', 'o.invoice_id');
+			$q->whereNull('so.deleted_at');
+		})->leftJoin('invoice AS i', function ($q) {
+			$q->on('i.id', '=', 'o.invoice_id');
+			$q->where('i.type', 'LIKE', 'sale%');
+			$q->whereNull('i.deleted_at');
+		})->whereNull('o.deleted_at')
+		->select(
+			DB::raw('DISTINCT(o.id) AS orderID'),
+			'p.id AS product_id', 'p.name', 'p.brand', 'p.itemcode',
+			'sp.price AS purchasePrice',
+			'o.salePrice',
+			'i.type AS invoiceType',
+			'so.posted',
+			'i.total',
+			'o.quantity'
+		);
+		if($request->sale_id) {
+			$query->where('i.invoice_id', $request->sale_id);
+		} else {
+			$query->whereBetween('i.date', [$from, $to]);
+		}
+
+		$invoice = $query->get();
+		
+		$product = [];
+		foreach ($invoice as $key => $value) {
+			// dd($value);
+			# code...
+			if (!array_key_exists($value->product_id, $product)) {
+				$product[$value->product_id] = [
+					'name' => "{$value->name} {$value->brand} {$value->itemcode}",
+					'total' => 0,
+					'quantity' => 0,
+					'profit' => 0
+				];
+			}
+			// $product[$value->product_id]['total']  += $value->salePrice*$value->quantity;
+			// $product[$value->product_id]['quantity']  += $value->quantity;
+			// $product[$value->product_id]['profit'] += $product[$value->product_id]['total'] - (get_purchase_pricing_on_date($value->product_id, $value->invoice->date)*$value->quantity);
+			// $purchase_price = get_purchase_pricing_on_date($value->product_id, $value->invoice->date);
+			if($value->invoiceType == 'sale_order' && $value->posted == false){
+				continue;
+			}
+			$product[$value->product_id]['total']  += $value->salePrice*$value->quantity;
+			$product[$value->product_id]['quantity']  += $value->quantity;
+			$product[$value->product_id]['purchase'] = $value->purchasePrice;
+			$product[$value->product_id]['profit'] += $value->salePrice*$value->quantity - ($value->purchasePrice*$value->quantity);
+			// $product[$value->product_id]['invoice_total'] = $value->total;
+			// $invoice_total[$value->invoice_id] = $value->invoice->total;
+		}
+		// foreach ($product as $key => $value) {
+		// 	# code...
+		// 	$product[$key]['purchase'] = estimated_purchased_price($key);
+		// }
+		// dd($product);
+		$is_all = true;
+		return view('reports.profit',compact('from','to','request','all','pin','product','is_all'));

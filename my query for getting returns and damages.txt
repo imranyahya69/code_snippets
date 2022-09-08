@@ -1,0 +1,11 @@
+        $purchase_return_invoices = DB::table('invoice')
+            ->join('purchases', 'invoice.id', '=', 'purchases.invoice_id')
+            ->selectRaw("SUM(purchases.purchase_price * purchases.quantity) as amt, invoice.person_id, invoice.invoice_type as typo")
+            ->where('invoice_date', $startdate)
+            ->whereIn('purchases.type',['out','damage'])
+            ->groupBy("invoice.person_id")
+            ->get();
+
+                foreach($purchase_return_invoices as $pri){
+                    $pri->typo = "return";
+                }

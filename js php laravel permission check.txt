@@ -1,0 +1,3 @@
+is_read_only = "{{ is_allowed('fixed-sale-price') }}" ? "readonly" : "";
+
+@if(is_allowed('fixed-sale-price')) readonly @endif
