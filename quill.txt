@@ -1,0 +1,19 @@
+        // $("#career_form").submit(function(e) {
+        //     e.preventDefault();
+        //     var quilText = $('.ql-editor').html();
+        //     var formData = $('#career_form').serialize();
+        //     formData += quilText;
+        //     $.ajax({
+        //         type: "POST",
+        //         data: {
+        //             data: formData,
+        //         },
+        //         headers: {
+        //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        //         },
+        //         url: "{{ route('careers.store') }}",
+        //         success: function(result) {
+        //             alert('success');
+        //         }
+        //     });
+        // });

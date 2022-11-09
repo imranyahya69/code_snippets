@@ -2,3 +2,5 @@
         date_default_timezone_set("Asia/Karachi");
     @endphp
 date("h:i a") <br>
+
+date('l, F d y h:i:s',strtotime($contact->created_at)) august 20, 2022, 8:00pm
