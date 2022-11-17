@@ -1,0 +1,1 @@
+<a class="leading-normal btn btn-success btn-sm"  download="MyPdf" href="{{ asset('storage/resume/' . $application->image)  }}" title="MyPdf">Download Resume</a>
