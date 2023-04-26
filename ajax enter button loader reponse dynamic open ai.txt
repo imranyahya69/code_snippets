@@ -1,0 +1,102 @@
+    <div class="container" style="margin-top: 15%">
+        <div class=" text-center">
+            <p class="h1 font-bold heading1">Chat Open Ai</p>
+            <form id="open_ai_form" action="{{ route('open_ai_result') }}" method="post">
+                @csrf
+                <center>
+                    <div class="input-group mb-3">
+                        <input oninput="checkInput(this)" required name="title" id="title" type="text"
+                            class="form-control font-bold w-full" placeholder="Type your question"
+                            aria-label="Recipient's username" aria-describedby="button-addon2">
+                        <button class="btn btn-lg btn-success" type="button" id="submit_button">Generate</button>
+                    </div>
+
+                </center>
+            </form>
+        </div>
+        <small class="text-danger d-none" id="empty_title_error">This field shouldn't be empty.</small>
+
+        <div style="height:auto;min-width:100%;"
+            class="mb-5 w-full rounded-md bg-white border-2 border-gray-600 p-4 h-full text-gray-600 d-none"
+            id="response_div">
+
+            {{-- <textarea class="min-h-[720px] h-full w-full outline-none" spellcheck="false">{{ @$content }}</textarea> --}}
+        </div>
+        <div class="d-flex justify-content-center d-none" id="spinner_div">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
+
+
+
+    $(document).ready(function() {
+        $(window).keydown(function(event) {
+            if (event.keyCode == 13) {
+                event.preventDefault();
+                $("#submit_button").click();
+            }
+        });
+    });
+
+    function checkInput(e) {
+        var element = $(e);
+        if (element.val() == '' || element.val() == undefined) {
+            $('#empty_title_error').removeClass('d-none');
+        } else {
+            $('#empty_title_error').addClass('d-none');
+        }
+
+    }
+    $('#submit_button').on('click', function(e) {
+        e.preventDefault();
+        $('#submit_button').attr('disabled', true);
+        $('#submit_button').html('Loading...');
+        $('#response_div').hide();
+        $('#spinner_div').removeClass('d-none');
+        if ($('#title').val() != '' && $('#title').val() != undefined) {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                method: 'POST',
+                url: '{{ route('open_ai_result') }}',
+                data: $('#open_ai_form').serialize(),
+                dataType: 'json',
+                success: function(res) {
+                    if (res.status == 200) {
+                        $('#title').focus();
+                        $('#response_div').removeClass('d-none');
+                        $('#title').val('');
+                        var html = '<h5 class="h5"><strong>Prompt:</strong> ' + res.title +
+                            '</h5>' +
+                            '<p><strong>ChatGPT:</strong> ' + res.content + '</p>' +
+                            '<br>';
+                        $('#response_div').prepend(html);
+                        $('#submit_button').attr('disabled', false);
+                        $('#response_div').show();
+                        $('#spinner_div').addClass('d-none');
+                        $('#submit_button').html('Generate');
+                    } else {
+                        $('#submit_button').attr('disabled', false);
+                        if ($('#spinner_div').children()) {
+                            $('#response_div').show();
+                        }
+                        $('#spinner_div').addClass('d-none');
+                        $('#submit_button').html('Generate');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            confirmButtonColor: '#bb2d3b',
+                            text: res.message
+                        })
+                    }
+                }
+            });
+        } else {
+            $('#empty_title_error').removeClass('d-none');
+        }
+    })

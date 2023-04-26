@@ -1,0 +1,23 @@
+            window.onload=function(){
+
+if (navigator.geolocation) {
+navigator.geolocation.watchPosition(showPosition);
+} else {
+ alert("Geolocation is not supported by this browser.") ;
+}
+}
+function showPosition(position) {
+latitude =position.coords.latitude;
+longitude=position.coords.longitude;
+
+if (latitude == undefined || latitude == '' || latitude == null){
+    latitude="38.508136";
+}
+
+if (longitude == undefined || longitude == '' || longitude == null){
+    longitude="-90.484482";
+}
+
+
+window.location=`https://morelobby_otherdomains.test?filter=true&latitude=${latitude}&longitude=${longitude}`;
+}

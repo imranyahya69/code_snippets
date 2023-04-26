@@ -1,0 +1,15 @@
+Route::prefix('{locale}')
+    ->where(['locale' => '[a-zA-Z]{2}'])
+    ->middleware('switchLocal')
+    ->group(function () {});
+
+middleware logic
+
+
+  if (array_key_exists($request->segment(1), config('app.locales'))) {
+            URL::defaults(['locale' => $request->segment(1)]);
+            app()->setLocale($request->segment(1));
+        } else {
+            URL::defaults(['locale' => 'en']);
+            app()->setLocale('en');
+        }

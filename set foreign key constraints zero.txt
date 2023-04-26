@@ -1,0 +1,8 @@
+SET foreign_key_checks = 0;
+truncate early_auction_payments;
+SET foreign_key_checks = 1;
+
+
+SET foreign_key_checks = 0;
+delete from early_auction_payments where id = '2';
+SET foreign_key_checks = 1;

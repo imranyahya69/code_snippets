@@ -1,0 +1,3 @@
+const url = new URL(window.location.href);
+const param = url.searchParams.get("paramName");
+console.log(param);

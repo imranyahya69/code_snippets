@@ -1,0 +1,4 @@
+SELECT ListingId, ( 3959 * acos( cos( radians(39.180566) ) * cos( radians( Latitude ) ) * 
+cos( radians( Longitude ) - radians(-89.633351) ) + sin( radians(39.180566) ) * 
+sin( radians( Latitude ) ) ) ) AS distance FROM mlsgrid_properties_idx HAVING
+distance < 5 ORDER BY distance LIMIT 0 , 20;

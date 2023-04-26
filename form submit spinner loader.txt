@@ -1,0 +1,5 @@
+<div style="width: 1rem !important;height: 1rem !important;" class="spinner-border d-none save-draft-spinner" role="status">
+	<span class="sr-only">Loading...</span>
+</div>
+$('.ready-for-review-spinner').removeClass('d-none');
+$('.ready-for-review-spinner').addClass('d-none');

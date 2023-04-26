@@ -1,0 +1,19 @@
+			var draftData = {
+				"street_number": $('input[name="street_number"]').val(),
+				"street_name": $('input[name="street_name"]').val(),
+				"auction_id": $('input[name="auction_id"]').val(),
+			};
+			$.ajaxSetup({
+				headers: {
+					'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+				}
+			});
+			$.ajax({
+				method:'POST',
+				url:'{{ route('admin.auction.auction_new_draft') }}',
+				data:draftData,
+				dataType: 'json',
+				success:function (res){	
+					console.log(res);
+				}
+			});

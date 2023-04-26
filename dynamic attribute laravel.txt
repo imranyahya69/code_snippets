@@ -1,0 +1,22 @@
+use Illuminate\Database\Eloquent\Casts\Attribute;
+
+    protected $appends=['Street','thumbnail'];
+
+    protected function thumbnail() : Attribute
+    {
+        return Attribute::make(
+            get: function ($value) {
+                $image = null;
+                $imagePath = $this->image_path;
+                $imageName = $this->image_name;
+                if($imagePath && $imageName && $imagePath != '' && $imageName != ''){
+                    $image = $this->image_path.$this->image_name;
+                }
+                return !is_null($image) ? $image : asset('assets/images/no-image.jpg');
+
+                // $imageService = new ImageService();
+                // $image = $imageService->single($this->ListingId);
+                // return !is_null($image) ? $image : asset('assets/images/no-image.jpg');
+            }
+        );
+    }

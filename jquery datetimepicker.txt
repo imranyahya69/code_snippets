@@ -1,0 +1,9 @@
+    <script src="{{asset('assets/common/jquery.datetimepicker.full.min.js')}}"></script>
+
+
+                $('input[name="expiry_date"]').datetimepicker({
+                    timepicker:false,
+                    todayButton:true,
+                    formatDate:'Y/m/d',
+                    minDate:0,
+               });

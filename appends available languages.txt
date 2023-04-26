@@ -1,0 +1,14 @@
+    protected function availableLanguage(): Attribute
+    {
+        return Attribute::make(
+            get: function ($value){
+            $value = $this->language;
+                if ($this->children->count() > 0){
+                    foreach ($this->children as $child){
+                        $value = $value.','.$child->language;
+                    }
+                }
+                return $value;
+            },
+        );
+    }

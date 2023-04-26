@@ -1,0 +1,10 @@
+        $user = User::find(Auth::id());
+        //Make image name
+        $imageName = $user->id . '-' . str_replace(' ', '', $user->full_name) . '-' . date("his") . '.' . $request->image->extension();
+        $request->image->storeAs('public/images', $imageName); //Store image in local directory
+        $user->image = $imageName;
+        if ($user->save()) { //save user image
+            return true;
+        } else {
+            return false;
+        }

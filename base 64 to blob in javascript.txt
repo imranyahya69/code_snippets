@@ -1,0 +1,49 @@
+                function dataURItoBlob(dataURI) {
+                    var byteString = atob(dataURI.split(',')[1]);
+                    var ab = new ArrayBuffer(byteString.length);
+                    var ia = new Uint8Array(ab);
+                    for (var i = 0; i < byteString.length; i++) {
+                        ia[i] = byteString.charCodeAt(i);
+                    }
+                    return new Blob([ab], {
+                        type: 'image/png'
+                    }); // Change the type as per your requirement
+                }
+
+                var base64Image = $(this).children().find('img').attr('src'); // Replace with your base64 image
+                var blobFile = dataURItoBlob(base64Image);
+                console.log(blobFile);
+
+
+
+
+
+
+                function dataURItoBlob(dataURI) {
+                    var byteString = atob(dataURI.split(',')[1]);
+                    var ab = new ArrayBuffer(byteString.length);
+                    var ia = new Uint8Array(ab);
+                    for (var i = 0; i < byteString.length; i++) {
+                        ia[i] = byteString.charCodeAt(i);
+                    }
+                    return new Blob([ab], {
+                        type: 'image/jpg'
+                    }); // Change the type as per your requirement
+                }
+
+                function base64ToImageFile(base64Image) {
+                    var img = new Image();
+                    img.src = base64Image;
+                    var canvas = document.createElement("canvas");
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    var ctx = canvas.getContext("2d");
+                    ctx.drawImage(img, 0, 0);
+                    var dataURL = canvas.toDataURL("image/jpg"); // Change the type as per your requirement
+                    var blobFile = dataURItoBlob(
+                        dataURL); // Use the dataURItoBlob() function from the previous answer
+                    return blobFile;
+                }
+
+                var base64Image = $(this).children().find('img').attr('src'); // Replace with your base64 image
+                var imageFile = base64ToImageFile(base64Image);

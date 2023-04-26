@@ -1,0 +1,164 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\BidderPayment;
+use App\Models\EarlyAuctionPayment;
+use App\Support\StripeClient;
+use Exception;
+
+class EarlyAuctionPaymentService
+{
+    //function details
+    //Immediately capture the early auction bid offer fee(97 dollars) using bidder payment details from
+    //bidder payment table.
+
+    //parameters details
+    //$auction_id used for early auction bid fee(97 dollars) payment for the specific auction. 
+    public function earlyAuctionFeePayment($auction_id)
+    {
+        // dd('dd');
+        // $stripe = new \Stripe\StripeClient(env('STRIPE_PRIVATE_KEY'));
+        // $card = $stripe->customers->allPaymentMethods(
+        //     'cus_MlOOdTbjuNoxKP',
+        //     ['type' => 'card']
+        //   );
+        //   dd($card['data'][0]['card']['last4']);
+        $this->payment = auth()->user()->bidderPayments()->where('type', BidderPayment::TYPE['Funds_Proof'])->whereNotNull('customer_id')->first();
+        // \Stripe\Stripe::setApiKey('sk_test_51J7DX2LUMnTWnM3PMN23yRc694YraeTDY4eilyhpr4Navr1UcBEcqndoyobaofvgv3utxaQKNgrBu9ZetNBkSRms00wa5gfME9');
+        // $stripe0 = new \Stripe\StripeClient(env('STRIPE_PRIVATE_KEY'));
+        // $response0 = $stripe0->customers->create([
+        //     'email' => 'imranyahya1111@gmail.com',
+        // ]);
+
+        // $stripe = new \Stripe\StripeClient(env('STRIPE_PRIVATE_KEY'));
+
+        // $response = $stripe->paymentMethods->create([
+        //     'type' => 'card',
+        //     'card' => [
+        //       'number' => '4242 4242 4242 4242',
+        //       'exp_month' => 11,
+        //       'exp_year' => 2023,
+        //       'cvc' => '123',
+        //     ],
+        // ]);
+
+
+        // $stripe->paymentMethods->attach(
+        //     $response['id'],
+        //     ['customer' => $response0['id']]
+        // );
+
+        $data = array(
+            'amount' => 9800,
+            'currency' => 'USD',
+            'payment_method' => auth()->user()->depositFunds->payment_method,
+            // 'payment_method' => $response['id'],
+            'setup_future_usage' => 'off_session',
+            'customer' => auth()->user()->depositFunds->customer_id,
+            // 'customer' => $response0['id'],
+            // 'customer' => 'cus_MlLbYZjAjrE9MW',
+            // 'automatic_payment_methods' => [
+            //     'enabled' => 'true',
+            //   ],
+            'confirm' => true
+        );
+
+        $stripe2 = new \Stripe\StripeClient(env('STRIPE_PRIVATE_KEY'));
+        $response1 = $stripe2->paymentIntents->create([$data]);
+
+        $paymmentDetails = [
+            'capture_id' => $response1['charges']['data'][0]['id'],
+            'client_secret' => $response1['charges']['data'][0]['payment_intent'],
+            'amount' => $response1['charges']['data'][0]['amount'],
+        ];
+    
+        // return $this->earlyAuctionPaymentStore();
+                $this->earlyAuctionPaymentStore($auction_id,  $paymmentDetails, $this->payment,);
+
+        return;
+
+        // if (isset($this->payment->customer_id) && $this->payment->customer_id != NULL && !empty($this->payment->customer_id)) {
+        //     $this->setup_intent = StripeClient::setupIntent($this->payment->customer_id);
+        //     // dd($this->setup_intent);
+        //     // seti_1M1oRBGhYCynHHB5QbezRcFq_secret_MlL7thRY99CUw3lRo7UhNMMLLkDAF6F
+
+        //     $paymentIntent = StripeClient::paymentIntent($this->payment->customer_id, $this->payment->payment_method, 97/100);
+        //     // dd($paymentIntent);
+        //     // pi_3M1oUvGhYCynHHB51wimKmQZ_secret_Jvh2BIwSdLp34jyIuMF1sf0il
+        //     $this->capture = StripeClient::paymentCharge($paymentIntent, 97/100);
+        //     dd($this->capture);
+        //     if ($this->capture) {
+        //         dd($this->capture); 
+        //         $this->earlyAuctionPaymentStore($this->payment, $this->capture,$auction_id);
+        //     }
+        // }
+    }
+
+    //function details
+    //store the details of early auction bid fee(97 dollars) payment into early auction payment table.
+
+    //parameters
+    // $payment object used from bidder payment table of the signed in bidder.
+    // $capture_id used from the response of payment capture for early auction bid fee(97 dollars).
+    public function earlyAuctionPaymentStore($auction_id, $paymentDetails, $paymentObject)
+    // public function earlyAuctionPaymentStore()
+    {
+        $result = ['status' => false];
+        try {
+            $EarlyAuctionPayment = new EarlyAuctionPayment;
+            $EarlyAuctionPayment->bidder_id = $paymentObject->bidder_id;
+            $EarlyAuctionPayment->amount = $paymentDetails['amount'];
+            $EarlyAuctionPayment->auction_id = $auction_id;
+            $EarlyAuctionPayment->customer_id = $paymentObject->customer_id;
+            $EarlyAuctionPayment->payment_method = $paymentObject->payment_method;
+            $EarlyAuctionPayment->client_secret = $paymentDetails['client_secret'];
+            $EarlyAuctionPayment->authorization_id = $paymentDetails['client_secret'];
+            $EarlyAuctionPayment->capture_id = $paymentDetails['capture_id'];
+            $EarlyAuctionPayment->save();
+
+            // $EarlyAuctionPayment = new EarlyAuctionPayment;
+            // $EarlyAuctionPayment->bidder_id = 416039;
+            // $EarlyAuctionPayment->amount = 97;
+            // $EarlyAuctionPayment->auction_id = 93;
+            // $EarlyAuctionPayment->customer_id = 'cus_MlMOynU0Fq3vrX';
+            // $EarlyAuctionPayment->payment_method = 'pm_1M1pfOLUMnTWnM3PfB6GHL3G';
+            // $EarlyAuctionPayment->client_secret = 'pi_3M1qztLUMnTWnM3P0zOYr61M';
+            // $EarlyAuctionPayment->authorization_id = 'pi_3M1qztLUMnTWnM3P0zOYr61M';
+            // $EarlyAuctionPayment->capture_id = 'ch_3M1qztLUMnTWnM3P0qHa6snq';
+            // $EarlyAuctionPayment->save();
+
+            $result = ['status' => true, 'early_auction_payment_id' => $EarlyAuctionPayment->id];
+            return $result;
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            return $result;
+        }
+
+        // echo json_encode(['status'=>1,'message'=>'Early Bid fee has been paid Successfully. ']);exit;
+
+    }
+
+    public function earlyAuctionPaymentRefund($refundable_payment_intents)
+    {
+        $refund_id = null;
+        try {
+            if (is_array($refundable_payment_intents)) {
+                foreach ($refundable_payment_intents as $refundable_payment_intent) {
+                    $stripe2 = new \Stripe\StripeClient(env('STRIPE_PRIVATE_KEY'));
+                    $refund_id = $stripe2->refunds->create(['payment_intent' => $refundable_payment_intent]);
+                    EarlyAuctionPayment::where('client_secret', $refundable_payment_intent)->update(['refund_id' => $refund_id]);
+                    // $refund_id = $stripe2->refunds->create(['payment_intent' => 'pi_3M2aHqGhYCynHHB51sS4Nwr9']);
+                    // dd($refund_id);
+                }
+            } else {
+                $stripe2 = new \Stripe\StripeClient(env('STRIPE_PRIVATE_KEY'));
+                $refund_id = $stripe2->refunds->create(['payment_intent' => $refundable_payment_intents]);
+                EarlyAuctionPayment::where('client_secret', $refundable_payment_intents)->update(['refund_id' => $refund_id]);
+            }
+            return ['status' => true, 'message' => 'success'];
+        } catch (Exception $e) {
+            return ['status' => false, 'message' => $e->getMessage()];
+        }
+    }
+}

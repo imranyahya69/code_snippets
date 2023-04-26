@@ -1,0 +1,44 @@
+        function doFilter(ele,type){
+            var urlParams = new URLSearchParams(window.location.search);
+            if (type == 'date'){
+                if($(ele).val() != ''){
+                    urlParams.set('order',$(ele).val());
+                }else{
+                    urlParams.delete('order');
+                }
+
+            }
+            //new filters added
+            if (type == 'orderByBedroom'){
+                if($(ele).val() != ''){
+                    urlParams.set('orderByBedroom',$(ele).val());
+                }else{
+                    urlParams.delete('orderByBedroom');
+                }
+            }
+            if (type == 'SchoolDistrict'){
+                if($(ele).val() != ''){
+                    urlParams.set('SchoolDistrict',$(ele).val());
+                }else{
+                    urlParams.delete('SchoolDistrict');
+                }
+            }
+            if (type == 'Style'){
+                if($(ele).val() != ''){
+                    urlParams.set('Style',$(ele).val());
+                }else{
+                    urlParams.delete('Style');
+                }
+            }
+            if (type == 'PropertyType'){
+                if($(ele).val() != ''){
+                    urlParams.set('PropertyType',$(ele).val());
+                }else{
+                    urlParams.delete('PropertyType');
+                }
+            }
+            history.replaceState(null, null, "?" + urlParams.toString());
+
+            let url = new URL(window.location.href);
+            window.location = url.href;
+        }

@@ -1,0 +1,3 @@
+        $openHouses->selectRaw( '( 3959 * acos( cos( radians(39.180566) ) * cos( radians( `p`.`Latitude` ) ) * 
+        cos( radians( `p`.`Longitude` ) - radians(-89.633351) ) + sin( radians(39.180566) ) * 
+        sin( radians( `p`.`Latitude` ) ) ) ) AS distance')->having('distance', '<', 5);

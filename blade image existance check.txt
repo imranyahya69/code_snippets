@@ -1,0 +1,1 @@
+file_exists(public_path('storage/images/' . @$user->userDocument->image_back))

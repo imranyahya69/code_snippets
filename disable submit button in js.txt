@@ -1,0 +1,1 @@
+  $(form).find("button[type='submit']").prop('disabled',true);

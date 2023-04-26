@@ -1,0 +1,27 @@
+    protected function thumbnail(): Attribute //img_placeholder.jpg
+    {
+        return Attribute::make(
+            get: function ($value) {
+                $path = asset('assets/img_placeholder.jpg');
+                if ($this->media->count() > 0) {
+                    $path = asset('storage/admin/' . $this->type);
+                    $path = $path . '/' . $this->media[0]->image_name;
+                }
+                return $path;
+            }
+        );
+    }
+    protected function activeLanguages(): Attribute //img_placeholder.jpg
+    {
+        return Attribute::make(
+            get: function ($value) {
+                $langArray = array();
+                if ($this->productDetails->count() > 0) {
+                    foreach ($this->productDetails as $detail) {
+                        array_push($langArray, $detail->language);
+                    }
+                }
+                return $langArray;
+            }
+        );
+    }

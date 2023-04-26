@@ -1,0 +1,10 @@
+ $propertyLat = $request->has('latitude') ? $request->get('latitude') : null;
+ $propertyLong = $request->has('longitude') ? $request->get('longitude') : null;
+          if (!is_null($propertyLat) && !is_null($propertyLong)){
+              $properties = $properties->select('*',\DB::raw("6371 * acos(cos(radians(" . $propertyLat . "))
+                 * cos(radians(mlsgrid_properties_idx_view.Latitude))
+                 * cos(radians(mlsgrid_properties_idx_view.Longitude) - radians(" . $propertyLong . "))
+                 + sin(radians(" . $propertyLat . "))
+                 * sin(radians(mlsgrid_properties_idx_view.Latitude))) AS distance"))
+                  ->having('distance', '<', 5);
+          }

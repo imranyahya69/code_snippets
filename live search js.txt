@@ -1,0 +1,16 @@
+        function liveSearch(ele){
+            var liveSearchWord = $(ele).val();
+            console.log(liveSearchWord.match(/[A-Za-z0-9]/i));
+            if(liveSearchWord == '' || liveSearchWord == ' ' || liveSearchWord == undefined || liveSearchWord == null){
+                $(ele).parent().children('a').each(function(){$(this).show();});
+            }else{
+                $(ele).parent().children('a').each(function(){
+                    var tagString = $(this).data('name').toString();
+                    if(tagString.includes(liveSearchWord.toString())){
+                        $(this).show();
+                    }else{
+                        $(this).hide();
+                    }
+                });
+            }
+    }

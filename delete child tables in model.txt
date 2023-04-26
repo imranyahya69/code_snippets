@@ -1,0 +1,9 @@
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($product) {
+            $product->productDetails()->delete();
+            $product->media()->delete();
+        });
+    }

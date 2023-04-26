@@ -1,0 +1,50 @@
+middleware
+
+ if (array_key_exists($request->segment(1), config('app.locales'))) {
+            URL::defaults(['locale' => $request->segment(1)]);
+            app()->setLocale($request->segment(1));
+        } else {
+            URL::defaults(['locale' => 'en']);
+            app()->setLocale('en');
+        }
+
+
+
+web routes
+
+Route::prefix('{locale}')
+    ->where(['locale' => '[a-zA-Z]{2}'])
+    ->middleware('switchLocal')
+    ->group(function () {
+
+        Auth::routes(); // Auth Routes
+
+
+
+blade language switch
+
+                                <div class="top_header-language-box">
+                                    <div class="top_header-language-container">
+                                        <span><a href="{{ route($CRN, ['locale' => 'en']) }}"
+                                                class="lang @if ($CL == 'en') lang-active @endif">EN</a>
+                                            <span class="text-white mx-2">|</span></span> <span><a
+                                                href="{{ route($CRN, ['locale' => 'kr']) }}"
+                                                class="lang @if ($CL == 'kr') lang-active @endif">KR</a></span>
+
+                                    </div>
+                                </div>
+
+
+ComposerServiceProvider
+
+
+    public function boot()
+    {
+        view()->composer('*', function ($view){
+            $CRN = Route::currentRouteName();
+            $CL = app()->getLocale();
+            $view->with(compact('CRN','CL'));
+        });
+    }
+
+

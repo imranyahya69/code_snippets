@@ -1,0 +1,47 @@
+        function doDeleteUser(url) {
+            $.confirm({
+                        title: 'DELETE!',
+                        content: 'Do you really want to delete this user?',
+                        buttons: {
+                            confirm: function() {
+                                $.ajax({
+                                    method: 'GET',
+                                    url: url,
+                                    data: {
+                                        notConfirmed: true,
+                                    },
+                                    success: function(data) {
+                                        if (data['status'] == 403 || data['status'] == '403') {
+                                            $.confirm({
+                                                title: 'DELETE!',
+                                                content: 'This user has some items in the cart. By deleting user, associated cart will also be deleted. Do you want to proceed ?',
+                                                buttons: {
+                                                    confirm: function() {
+                                                        $.ajax({
+                                                            method: 'GET',
+                                                            url: url,
+                                                            data: {
+                                                                notConfirmed: false,
+                                                            },
+                                                            success: function(data) {
+                                                                if (data['status'] == 200 || data['status'] =='200'){
+                                                                    window.location.href = url;
+                                                                }
+                                                            }
+                                                        });
+                                                    }
+                                                }
+                                            });
+                                        }
+                                        else{
+                                            window.location.href = url;
+                                        }
+                                        },
+                                        cancel: function() {
+
+                                        },
+                                    })
+                                }
+                            }
+                        });
+                    }
